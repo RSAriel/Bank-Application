@@ -4,6 +4,8 @@ import java.time.Year;
 
 public class AccountUtils {
 
+    public static final String TEST_ERROR = "000";
+    public static final String TEST_ERROR_MESSAGE = "There is an error here";
     public static final String ACCOUNT_EXISTS_CODE = "001";
     public static final String ACCOUNT_EXISTS_MESSAGE = "This user already has an account";
     public static final String ACCOUNT_CREATION_SUCCESS = "002";
@@ -18,6 +20,9 @@ public class AccountUtils {
     public static final String INSUFFICIENT_BALANCE_MESSAGE = "Insufficient Balance";
     public static final String ACCOUNT_DEBIT_SUCCESS = "007";
     public static final String ACCOUNT_DEBIT_SUCCESS_MESSAGE = "Debit Transaction Successful";
+    public static final String TRANSFER_SUCCESSFUL_CODE = "008";
+    public static final String TRANSFER_SUCCESSFUL_MESSAGE = "Transfer Successful";
+
 
 
     public static String generateAccountNumber() {

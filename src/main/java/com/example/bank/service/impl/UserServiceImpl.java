@@ -154,4 +154,56 @@ public class UserServiceImpl implements UserService {
                     .build();
         }
     }
+
+    @Override
+    public BankResponse transfer(TransferRequest request) {
+        boolean isDestinationValid = userRepository.existsByAccountNumber(request.getDestinationAccount());
+        if(!isDestinationValid) {
+            return BankResponse.builder()
+                    .responseCode(AccountUtils.ACCOUNT_NOT_EXIST_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_NOT_EXIST_MESSAGE)
+                    .accountInfo(null)
+                    .build();
+        }
+
+        User sourceAccountUser = userRepository.findByAccountNumber(request.getSourceAccount());
+        if (request.getAmount().compareTo(sourceAccountUser.getAccountBalance()) > 0) {
+            return BankResponse.builder()
+                    .responseCode(AccountUtils.INSUFFICIENT_BALANCE_CODE)
+                    .responseMessage(AccountUtils.INSUFFICIENT_BALANCE_MESSAGE)
+                    .accountInfo(null)
+                    .build();
+        }
+
+        sourceAccountUser.setAccountBalance(sourceAccountUser.getAccountBalance().subtract(request.getAmount()));
+//        String sourceUsername = sourceAccountUser.getFirstName() + " " + sourceAccountUser.getLastName();
+        userRepository.save(sourceAccountUser);
+
+        EmailDetails debitAlert = EmailDetails.builder()
+                .subject("DEBIT ALERT")
+                .recipient(sourceAccountUser.getEmail())
+                .messageBody(request.getAmount().toString() + " dollars has been deducted from your account, your new balance is " + sourceAccountUser.getAccountBalance() + " dollars")
+                .build();
+
+        emailService.sendEmailAlert(debitAlert);
+
+        User destinationAccountUser = userRepository.findByAccountNumber(request.getDestinationAccount());
+        destinationAccountUser.setAccountBalance(destinationAccountUser.getAccountBalance().add(request.getAmount()));
+//        String recipientUsername = destinationAccountUser.getFirstName() + " " + destinationAccountUser.getLastName();
+        userRepository.save(destinationAccountUser);
+
+        EmailDetails creditAlert = EmailDetails.builder()
+                .subject("CREDIT ALERT")
+                .recipient(sourceAccountUser.getEmail())
+                .messageBody(request.getAmount().toString() + " dollars has been added to your account, your new balance is " + destinationAccountUser.getAccountBalance() + " dollars")
+                .build();
+
+        emailService.sendEmailAlert(creditAlert);
+
+        return BankResponse.builder()
+                .responseCode(AccountUtils.TRANSFER_SUCCESSFUL_CODE)
+                .responseMessage(AccountUtils.TRANSFER_SUCCESSFUL_MESSAGE)
+                .accountInfo(null)
+                .build();
+    }
 }
