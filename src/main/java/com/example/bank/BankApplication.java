@@ -17,16 +17,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 				contact = @Contact(
 						name = "Ariel Santos",
 						email = "simple.bank.application@gmail.com",
-						url = "https://github.com/RSAriel/Bank-Application"
+						url = "https://github.com/RSAriel"
 				),
 				license = @License(
-						name = "arss5",
+						name = "Github Link",
 						url = "https://github.com/RSAriel/Bank-Application"
 				)
-		),
-		externalDocs = @ExternalDocumentation(
-				description = "Bank Application Documentation by arss5",
-				url = "https://github.com/RSAriel/Bank-Application"
 		)
 )
 public class BankApplication {
